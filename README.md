@@ -1,24 +1,75 @@
-# README
+## README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+DockerでRails環境を構築。
+下記にあるDocker Hub から"sumura80/docker-rails"をdocker上で取得します。
+https://hub.docker.com/r/sumura80/docker-rails
 
-Things you may want to cover:
 
-* Ruby version
+取得とコンテナの作成と開始方法:
+Terminal上で下記のコマンドを実行してください。
+1. docker pull sumura80/docker-rails
+（イメージの取得）
 
-* System dependencies
+2. docker-compose build
+（サービスの構築・実行）
 
-* Configuration
+3. docker-compose run web rake db:create
+（データベースの作成）
 
-* Database creation
+4. docker-compose up
+（サーバーの起動）
 
-* Database initialization
+5. localhost:3000　にアクセス
+  
+    
+### 環境
+アプリ名： myrailsapp
+ 
+Ruby:2.5.0  
+ 
+Rails: 5.1.7
+ 
+DB: postgresql　
+ 
+  
+### Dockerfile
+````
+FROM ruby:2.5.0
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+WORKDIR /myrailsapp
+ADD Gemfile /myrailsapp/Gemfile
+ADD Gemfile.lock /myrailsapp/Gemfile.lock
+RUN gem install bundler
+RUN bundle install
+ADD . /myrailsapp
+````
 
-* How to run the test suite
+  
+   
+     
+### docker-compose.yml
+````
+version: '3'
+services:
+  db:
+    image: postgres
+  web:
+    build: .     
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/myrailsapp
+    depends_on:
+      - db
+volumes:
+  postgresql-data:
+    driver: local
 
-* Services (job queues, cache servers, search engines, etc.)
+````
 
-* Deployment instructions
-
-* ...
+   
+### その他
+GitHubとDocker Hubを連携させている。
+　
+イメージのpullに少し時間がかかる。
