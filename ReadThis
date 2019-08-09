@@ -1,0 +1,4 @@
+下記のコマンドを流してください
+docker-compose run web rails new . --force --database=postgresql --skip-bundle
+docker-compose up
+docker-compose build
